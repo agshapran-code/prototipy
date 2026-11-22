@@ -311,6 +311,7 @@
   }
 
   function addRequestDialog() {
+    const testMode = new URLSearchParams(location.search).get("test-zayavka") === "1";
     const dialog = node("dialog", "", "request-dialog");
     dialog.setAttribute("aria-labelledby", "request-title");
     dialog.innerHTML = [
@@ -329,6 +330,14 @@
     const name = form.elements.namedItem("name");
     const phone = form.elements.namedItem("phone");
     const comment = form.elements.namedItem("message");
+    if (testMode) {
+      dialog.querySelector(".request-head + p").textContent =
+        "Тестовый режим. Введите вымышленные имя и комментарий. Телефон — 10 цифр, начиная с 000.";
+      phone.placeholder = "0001234567";
+      name.autocomplete = "off";
+      phone.autocomplete = "off";
+      form.querySelector('[type="submit"]').textContent = "Продолжить отправку тестовой заявки";
+    }
     const draft = dialog.querySelector(".mail-draft");
     const feedback = dialog.querySelector(".feedback");
     let topic = "";
@@ -374,8 +383,18 @@
     form.addEventListener("submit", event => {
       event.preventDefault();
       name.setCustomValidity(name.value.trim() ? "" : "Укажите имя.");
-      phone.setCustomValidity(phone.value.replace(/\D/g, "").length >= 7 ? "" : "Введите телефон, по которому с вами можно связаться.");
+      const testPhone = phone.value.trim();
+      phone.setCustomValidity(testMode
+        ? (/^000\d{7}$/.test(testPhone) ? "" : "Введите 10 цифр, начиная с 000.")
+        : (phone.value.replace(/\D/g, "").length >= 7 ? "" : "Введите телефон, по которому с вами можно связаться."));
       if (!form.reportValidity()) return;
+      if (testMode) {
+        const data = new URLSearchParams({
+          testLead: "1", name: name.value.trim(), phone: testPhone, comment: comment.value.trim()
+        });
+        location.assign("https://script.google.com/macros/s/AKfycbw0gsSbE0XceLnjA_QCXGyQJk0Csg6RsGTGP7tGATrfkHyxaaIGW6KNNvOlDqlu2CCT/exec" + "#" + data);
+        return;
+      }
       const body = [
         quoteItems.length ? "Здравствуйте! Прошу рассчитать мою подборку." : "Здравствуйте! Хочу записаться: " + topic + ".",
         "Имя: " + name.value.trim(),
