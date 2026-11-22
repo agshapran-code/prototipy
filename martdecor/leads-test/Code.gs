@@ -64,3 +64,38 @@ function sendTestLead() {
     lock.releaseLock();
   }
 }
+
+/** Run once from the editor. The pairing phrase is a temporary Script Property. */
+function connectTelegramChat() {
+  const props = PropertiesService.getScriptProperties();
+  const token = props.getProperty('TELEGRAM_BOT_TOKEN') || '';
+  const phrase = props.getProperty('TELEGRAM_SETUP_PHRASE') || '';
+  if (!/^\d+:[\w-]+$/.test(token) || phrase.length < 12) {
+    throw new Error('Проверьте токен и задайте временную фразу длиной от 12 символов.');
+  }
+  let updates;
+  try {
+    const response = UrlFetchApp.fetch('https://api.telegram.org/bot' + token + '/getUpdates', {
+      method: 'post', contentType: 'application/json',
+      payload: JSON.stringify({limit: 100, timeout: 0}), muteHttpExceptions: true
+    });
+    updates = JSON.parse(response.getContentText());
+  } catch (_) {
+    throw new Error('Запрос к Telegram не удался.');
+  }
+  if (!updates.ok) {
+    throw new Error(updates.error_code === 409
+      ? 'Бот подключён к другому обработчику. Задайте TELEGRAM_CHAT_ID вручную.'
+      : 'Telegram отклонил запрос. Проверьте, что токен действующий.');
+  }
+  const ids = new Set(updates.result
+    .map(update => update.message)
+    .filter(message => message?.chat?.type === 'private' && message.text === phrase)
+    .map(message => String(message.chat.id)));
+  if (ids.size !== 1) {
+    throw new Error('Отправьте временную фразу в личный чат с ботом и запустите функцию снова.');
+  }
+  props.setProperty('TELEGRAM_CHAT_ID', [...ids][0]);
+  props.deleteProperty('TELEGRAM_SETUP_PHRASE');
+  console.info('Личный чат Telegram привязан.');
+}
