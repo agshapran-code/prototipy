@@ -5,8 +5,11 @@
   const itemById = new Map(items.map(item => [item.id, item]));
   const categoryById = new Map(categories.map(category => [category.id, category]));
   const roomExamples = {
+    plaster:{image:"rooms/living-1.webp",description:"Визуализация гостиной с матовой штукатуркой"},
+    mirrors:{image:"rooms/album-1.webp",description:"Круглое зеркало в ванной. Пример размещения из галереи салона."},
+    gypsum:{image:"vk-samples/gypsum-7.webp",description:"Композиция из цветных гипсовых элементов на стене",item:"gypsum-7"},
     panels: {image:"oak.jpg", description:"Акустические панели на стене", item:"latte"},
-    wallpaper: {image:"forest.jpg", description:"Фреска с лесным пейзажем в столовой", item:"forest-fresco"},
+    wallpaper: {image:"salon-29.jpg", description:"Фактура и рисунок обоев в подборке салона"},
     decor: {image:"shangrila.png", description:"Гипсовое панно SHANGRILA на стене", item:"shangrila"},
     color: {image:"orac.jpg", description:"Окрашенные стены и отделка в детской"},
     natural: {image:"vk-7657.jpg", description:"Рельефное покрытие Decaro в интерьере", item:"ceppo"}
@@ -14,7 +17,7 @@
   const selection = readSelection();
   const get = selector => document.querySelector(selector);
   const format = value => new Intl.NumberFormat("ru-RU").format(value);
-  const price = item => item.price ? format(item.price) + " ₽ / " + item.unit : "Цена по запросу";
+  const price = item => item.price ? format(item.price) + " ₽" + (item.unit ? " / " + item.unit : "") : "Цена по запросу";
 
   function readSelection() {
     let value = query.get("selection");
@@ -76,9 +79,7 @@
       card.append(image(category.image, ""), content);
       return card;
     }));
-    const featured = ["latte", "fresq-classic", "dblack"].map(id => productCard(itemById.get(id)));
-    get("#featured").append(...featured);
-    connectTextureButton(get("[data-hero-texture]"), get(".hero"), "Весь интерьер", "Рассмотреть фактуру");
+
   }
 
   function connectTextureButton(button, surface, zoomedLabel, normalLabel) {
@@ -87,6 +88,29 @@
       button.setAttribute("aria-pressed", String(zoomed));
       button.textContent = zoomed ? zoomedLabel : normalLabel;
     };
+  }
+
+  function interiorButton(example) {
+    const button = node("button", "Посмотреть в интерьере", "button secondary");
+    button.type = "button";
+    button.onclick = () => {
+      const popup = node("dialog", "", "interior-popup");
+      popup.setAttribute("aria-label", "Пример в интерьере");
+      const close = node("button", "Закрыть ×");
+      close.onclick = () => popup.close();
+      popup.append(close, image(example.image, example.description), node("p", example.description));
+      popup.addEventListener("close", () => popup.remove(), {once:true});
+      if (example.zoom) {
+        const zoom = node("button", "Увеличить фактуру", "texture-toggle");
+        zoom.type = "button";
+        zoom.setAttribute("aria-pressed", "false");
+        connectTextureButton(zoom, popup, "Полное фото", "Увеличить фактуру");
+        popup.append(zoom);
+      }
+      document.body.append(popup);
+      popup.showModal();
+    };
+    return button;
   }
 
   function renderCatalog() {
@@ -104,7 +128,7 @@
       const found = items.filter(item =>
         (!category.value || item.category === category.value) &&
         (!style.value || item.style === style.value) &&
-        (!term || (item.name + " " + (item.brand || "") + " " + item.summary).toLocaleLowerCase("ru").includes(term))
+        (!term || (item.name + " " + item.id + " " + (item.brand || "") + " " + item.summary).toLocaleLowerCase("ru").includes(term))
       );
       get("#results").textContent = found.length ? "Найдено: " + found.length : "По вашему запросу ничего не найдено. Попробуйте изменить фильтры.";
       get("#catalog-results").replaceChildren(...found.map(productCard));
@@ -114,6 +138,7 @@
       if (example) {
         const copy = node("div");
         copy.append(node("h2", "Как выглядит в интерьере"), node("p", example.description));
+        copy.append(interiorButton(example));
         if (example.item) copy.append(route("item.html?id=" + example.item, "Посмотреть этот материал"));
         preview.replaceChildren(image(example.image, example.description), copy);
       }
@@ -239,16 +264,11 @@
     info.append(actions, feedback);
     const visual = node("div", "", "material-visual");
     visual.append(figure);
-    const example = roomExamples[item.category];
-    if (example.image !== item.image) {
-      const room = node("details", "", "material-context");
-      room.append(node("summary", "Пример такой отделки в интерьере"));
-      room.append(image(example.image, example.description));
-      room.append(node("p", example.description + ". Показан пример из этого раздела.", "small"));
-      visual.append(room);
-    } else if (!item.photoNote) {
-      figure.append(node("figcaption", "Этот материал в интерьере"));
-    }
+    const exact = ["ash-crystal","quilt","slats-xl","gypsum-7","latte"].includes(item.id);
+    const example = exact ? {image:item.image, description:item.name + " в интерьере · фото из каталога салона"} : roomExamples[item.category];
+    const samePhoto = example?.image === item.image;
+    if (samePhoto) texture.remove();
+    if (example) visual.append(interiorButton({...example, zoom:samePhoto, description:exact ? example.description : "Пример для раздела «" + categoryById.get(item.category).title + "». " + example.description}));
     details.append(visual, info);
     section.replaceChildren(crumb(categoryById.get(item.category).title, "catalog.html?category=" + item.category), details);
   }
@@ -380,6 +400,8 @@
     if (target) target.scrollIntoView({behavior:"instant"});
   }
 })();
+
+
 
 
 
