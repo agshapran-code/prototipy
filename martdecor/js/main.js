@@ -311,83 +311,28 @@
   }
 
   function addRequestDialog() {
+    // Set this only in a test checkout served separately from the live site.
+    const testFormUrl = "";
     const dialog = node("dialog", "", "request-dialog");
     dialog.setAttribute("aria-labelledby", "request-title");
     dialog.innerHTML = [
-      '<div class="request-head"><h2 id="request-title"></h2><button type="button" class="close-request">Закрыть</button></div>',
-      '<p>Оставьте имя, телефон и задачу. Из формы можно открыть готовый черновик письма менеджеру.</p>',
-      '<form><div class="request-selection" hidden><b>Материалы для расчёта</b><ul></ul></div><label>Имя<input name="name" autocomplete="name" required maxlength="80"></label>',
-      '<label>Телефон<input name="phone" type="tel" autocomplete="tel" inputmode="tel" required placeholder="+7 900 000-00-00" maxlength="34"></label>',
-      '<label>Что вы хотите подобрать?<textarea name="message" rows="3" maxlength="800"></textarea></label>',
-      '<button class="button" type="submit">Подготовить заявку</button>',
-      '<p class="feedback" role="status" hidden>Черновик готов. Откройте почту и отправьте письмо менеджеру.</p>',
-      '<a class="button secondary mail-draft" hidden>Открыть черновик в почте</a></form>',
-      '<a class="phone-link"></a>'
+      '<div class="request-head"><h2 id="request-title">Тест заявки</h2>',
+      '<button type="button" class="close-request">Закрыть</button></div>',
+      '<p>Для проверки используется вымышленная заявка.</p>'
     ].join("");
-    document.body.append(dialog);
-    const form = dialog.querySelector("form");
-    const name = form.elements.namedItem("name");
-    const phone = form.elements.namedItem("phone");
-    const comment = form.elements.namedItem("message");
-    const draft = dialog.querySelector(".mail-draft");
-    const feedback = dialog.querySelector(".feedback");
-    let topic = "";
-    let quoteItems = [];
-    function clearDraft() {
-      draft.hidden = true;
-      feedback.hidden = true;
+
+    if (/^https:\/\/script\.google\.com\/macros\/s\/[\w-]+\/exec$/.test(testFormUrl)) {
+      const link = node("a", "Открыть тестовую форму", "button");
+      link.href = testFormUrl;
+      dialog.append(link);
+    } else {
+      dialog.append(node("p", "Тестовая форма ожидает подключения Apps Script."));
     }
+
+    document.body.append(dialog);
     dialog.querySelector(".close-request").onclick = () => dialog.close();
-    dialog.addEventListener("click", event => {
-      const box = dialog.getBoundingClientRect();
-      if (event.target === dialog && (event.clientX < box.left || event.clientX > box.right ||
-          event.clientY < box.top || event.clientY > box.bottom)) dialog.close();
-    });
     document.addEventListener("click", event => {
-      const trigger = event.target.closest("[data-request]");
-      if (!trigger) return;
-      topic = trigger.dataset.request;
-      const isLunch = topic === "Ланч для дизайнеров";
-      const isQuote = topic === "Расчёт подборки";
-      quoteItems = isQuote ? Array.from(selection, id => itemById.get(id).name) : [];
-      const requestSelection = dialog.querySelector(".request-selection");
-      requestSelection.hidden = !quoteItems.length;
-      requestSelection.querySelector("ul").replaceChildren(...quoteItems.map(title => node("li", title)));
-      dialog.querySelector("h2").textContent = isQuote ? "Запросить расчёт" : isLunch ? "Записаться на ланч" : "Записаться на подбор";
-      const phoneLink = dialog.querySelector(".phone-link");
-      phoneLink.href = isLunch ? "tel:+79094210421" : "tel:+79094200420";
-      phoneLink.textContent = isLunch ? "Позвонить: +7 (909) 421-04-21" : "Позвонить: +7 (909) 420-04-20";
-      comment.parentElement.firstChild.textContent = isQuote ? "Размеры или комментарий" : isLunch ? "Комментарий к записи" : "Что вы хотите подобрать?";
-      form.reset();
-      name.setCustomValidity("");
-      phone.setCustomValidity("");
-      if (trigger.dataset.material) comment.value = "Интересует материал «" + trigger.dataset.material + "».";
-      clearDraft();
-      dialog.showModal();
-      name.focus();
-    });
-    form.addEventListener("input", () => {
-      name.setCustomValidity("");
-      phone.setCustomValidity("");
-      clearDraft();
-    });
-    form.addEventListener("submit", event => {
-      event.preventDefault();
-      name.setCustomValidity(name.value.trim() ? "" : "Укажите имя.");
-      phone.setCustomValidity(phone.value.replace(/\D/g, "").length >= 7 ? "" : "Введите телефон, по которому с вами можно связаться.");
-      if (!form.reportValidity()) return;
-      const body = [
-        quoteItems.length ? "Здравствуйте! Прошу рассчитать мою подборку." : "Здравствуйте! Хочу записаться: " + topic + ".",
-        "Имя: " + name.value.trim(),
-        "Телефон: " + phone.value.trim(),
-        quoteItems.length ? "Материалы:\n" + quoteItems.map(title => "• " + title).join("\n") : "",
-        comment.value.trim()
-      ].filter(Boolean).join("\n");
-      draft.href = "mailto:info@martdecor.ru?subject=" + encodeURIComponent(topic + " · МАРТдекор") +
-        "&body=" + encodeURIComponent(body);
-      feedback.hidden = false;
-      draft.hidden = false;
-      draft.focus();
+      if (event.target.closest("[data-request]")) dialog.showModal();
     });
   }
   const render = {home:renderHome, catalog:renderCatalog, item:renderItem, article:renderArticle};
