@@ -2,10 +2,23 @@ function doGet() {
   return HtmlService.createHtmlOutput(`<!doctype html><html lang="ru"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>МАРТдекор — тест заявок</title>
   <body style="max-width:38rem;margin:3rem auto;padding:0 1rem;font:1rem system-ui">
   <h1>МАРТдекор — тест заявок</h1><p>Будет отправлена вымышленная заявка «Тестовый клиент», телефон 0000000000.</p>
-  <button id="send">Отправить тестовую заявку</button><p id="status" role="status"></p>
+  <p id="preview" hidden></p><button id="send">Отправить тестовую заявку</button><p id="status" role="status"></p>
   <script>
   const button = document.getElementById('send');
   const status = document.getElementById('status');
+  let lead;
+  button.disabled = true;
+  google.script.url.getLocation(location => {
+    const params = new URLSearchParams(location.hash || '');
+    if (params.get('testLead') === '1') {
+      lead = {name: params.get('name'), phone: params.get('phone'), comment: params.get('comment')};
+      const preview = document.getElementById('preview');
+      preview.textContent = [lead.name, lead.phone, lead.comment].filter(Boolean).join(' · ');
+      preview.hidden = false;
+      document.querySelector('h1 + p').textContent = 'Тестовые данные из формы сайта. Проверьте их перед отправкой.';
+    }
+    button.disabled = false;
+  });
   button.onclick = () => {
     button.disabled = true;
     status.textContent = 'Проверяем доставку…';
@@ -15,12 +28,22 @@ function doGet() {
     }).withFailureHandler(() => {
       status.textContent = 'Сбой проверки. Посмотрите, появилась ли заявка в таблице, прежде чем повторять.';
       button.disabled = false;
-    }).sendTestLead();
+    }).sendTestLead(lead || null);
   };
   </script></body></html>`);
 }
 
-function sendTestLead() {
+function sendTestLead(lead) {
+  const data = lead == null
+    ? {name: 'Тестовый клиент', phone: '0000000000', comment: 'Проверка формы'}
+    : lead;
+  const {name, phone, comment} = data;
+  if (typeof name !== 'string' || !name.trim() || name.length > 80 ||
+      typeof phone !== 'string' || !/^000\d{7}$/.test(phone) ||
+      typeof comment !== 'string' || comment.length > 800) {
+    return 'Проверьте имя, комментарий и тестовый телефон из 10 цифр, начинающийся с 000.';
+  }
+  const asCellText = value => /^[\s]*[=+@-]/.test(value) ? "'" + value : value;
   const props = PropertiesService.getScriptProperties();
   const sheetId = props.getProperty('SPREADSHEET_ID');
   const emailTo = props.getProperty('NOTIFICATION_EMAIL');
@@ -35,11 +58,11 @@ function sendTestLead() {
   try {
     const sheet = SpreadsheetApp.openById(sheetId).getSheets()[0];
     const id = Utilities.getUuid();
-    const message = 'МАРТдекор — тестовая заявка ' + id + '\nТестовый клиент · 0000000000\nПроверка формы';
+    const message = 'МАРТдекор — тестовая заявка ' + id + '\nИмя: ' + name + '\nТелефон: ' + phone + '\nКомментарий: ' + comment;
     const row = sheet.getLastRow() + 1;
     sheet.getRange(row, 5).setNumberFormat('@');
     sheet.getRange(row, 1, 1, 8).setValues([[id, new Date().toISOString(),
-      'Тест', 'Тестовый клиент', '0000000000', 'Проверка формы', 'Ожидает', 'Ожидает']]);
+      'Тест', asCellText(name), phone, asCellText(comment), 'Ожидает', 'Ожидает']]);
     SpreadsheetApp.flush();
 
     let telegram = 'Ошибка';
