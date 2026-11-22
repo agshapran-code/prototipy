@@ -312,7 +312,7 @@
 
   function addRequestDialog() {
     // Set this only in a test checkout served separately from the live site.
-    const testFormUrl = "";
+    const testFormUrl = "https://script.google.com/macros/s/AKfycbw0gsSbE0XceLnjA_QCXGyQJk0Csg6RsGTGP7tGATrfkHyxaaIGW6KNNvOlDqlu2CCT/exec";
     const dialog = node("dialog", "", "request-dialog");
     dialog.setAttribute("aria-labelledby", "request-title");
     dialog.innerHTML = [
