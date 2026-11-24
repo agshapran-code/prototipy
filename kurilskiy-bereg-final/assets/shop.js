@@ -63,19 +63,13 @@ function photoStyle([x, y, width], aspect) {
   return `--size:${1086 / width * 100}% auto;--position:${left}% ${top(aspect)}%;--position-small:${left}% ${top(1.25)}%`;
 }
 
-function drawTiles() {
-  byId("category-tiles").innerHTML = categories.filter((category) => !category.secondary).map((category) => `
-    <a class="tile${category.image ? " photo-" + category.image : ""}" data-category="${category.id}" href="#catalog"${category.photo ? ' style="' + photoStyle(category.photo, 2.2) + '"' : ""}>
-      <strong>${category.name}</strong>
-    </a>`).join("");
-}
 
 let showAllProducts = false;
 
 function drawCatalog() {
   const query = normalize(byId("search").value);
   const catalogTitle = byId("catalog-title");
-  catalogTitle.textContent = selected === "all" ? "Из каталога" : categoryById.get(selected).name;
+  catalogTitle.textContent = selected === "all" ? "Каталог" : categoryById.get(selected).name;
   const choices = [{ id: "all", name: "Все товары" }, ...categories.filter((category) => !category.parent || category.id === selected)];
   const extra = byId("category-extra");
   const browseLive = selected === "seafood" || selected === "live";
@@ -109,7 +103,7 @@ function drawCatalog() {
         <h3>${product.name}</h3>
         <p>${product.description}</p>
         ${product.price ? `<strong class="price">${product.price}</strong>` : ""}
-        ${purchase}
+        ${product.category === "new" ? `<button type="button" class="secondary" data-contact="message" data-subject="Есть ли сейчас ${product.name.toLowerCase()}? Какой вес можно заказать?">Уточнить вес и наличие</button>` : purchase}
       </div>
     </article>`;
   }).join("") || '<p>По этому запросу в демо-каталоге ничего не нашлось.</p>';
@@ -232,13 +226,7 @@ function openCheckout() {
   updateFulfillment();
 }
 
-byId("category-tiles").addEventListener("click", (event) => {
-  const tile = event.target.closest("[data-category]");
-  if (!tile) return;
-  selected = tile.dataset.category;
-  byId("search").value = "";
-  drawCatalog();
-});
+
 
 byId("filters").addEventListener("click", (event) => {
   const button = event.target.closest("[data-filter]");
@@ -418,7 +406,7 @@ document.querySelector(".photo-switch").addEventListener("click", (event) => {
 
 
 updateBasketCount([...cart.values()].reduce((sum, line) => sum + line.count, 0));
-drawTiles();
+
 drawCatalog();
 if (location.hash === "#basket") openCart();
 window.addEventListener("hashchange", () => { if (location.hash === "#basket") openCart(); });
