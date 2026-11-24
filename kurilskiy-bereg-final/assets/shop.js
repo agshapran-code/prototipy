@@ -18,7 +18,7 @@ const products = [
   { id: "mussels", category: "seafood", name: "Мидии в раковине", description: "В собственном соку, калибр 50–70.", photo: [740, 1136, 310], price: "990 ₽ за 1 кг", options: [["1 кг", 990]], path: "/moreprodukty/midii-v-rakovine-v-sobstvennom-soku-50-70-1-kg" },
   { id: "trout", category: "fish", name: "Морская форель", description: "Охлаждённая рыба из Мурманска, тушка 4–5 кг. Варианты разделки можно уточнить в магазине.", price: "2 290 ₽ за кг", weighted: true, options: [["Целая тушка, ориентир 4 кг", 9160]], path: "/ryba/" },
   { id: "cod-roe", category: "roe", name: "Икра трески слабой соли", description: "Нежная, умеренного посола. Банка 190 г.", price: "410 ₽ за банку", options: [["190 г", 410]], path: "/ikra/" },
-  { id: "trout-roe", category: "roe", name: "Икра форели", description: "Фасовка 250 г.", price: "4 290 ₽ за банку", path: "/ikra/" },
+  { id: "trout-roe", category: "roe", name: "Икра форели", description: "Фасовка 250 г.", price: "4 290 ₽ за банку", options: [["250 г", 4290]], path: "/ikra/ikra-foreli-2025-0-25-kg" },
   { id: "shrimp", category: "seafood", name: "Креветки ваннамей", description: "Очищенные, свежемороженые, калибр 16/20.", path: "/moreprodukty/krevetki/" },
   { id: "oysters", category: "live", name: "Хасанская устрица", description: "Живая устрица, калибр 200+.", path: "/zhivye-moreprodukty/" },
   { id: "live-mussels", category: "live", name: "Живые мидии", description: "Фасовка 1 кг.", price: "890 ₽ за 1 кг", path: "/zhivye-moreprodukty/" },
@@ -70,7 +70,7 @@ function drawCatalog() {
   const query = normalize(byId("search").value);
   const catalogTitle = byId("catalog-title");
   catalogTitle.textContent = selected === "all" ? "Каталог" : categoryById.get(selected).name;
-  const choices = [{ id: "all", name: "Все товары" }, ...categories.filter((category) => !category.parent || category.id === selected)];
+  const choices = [{ id: "all", name: "Все товары" }, ...categories.filter((category) => category.id !== "new" && (!category.parent || category.id === selected)), categoryById.get("new")];
   const extra = byId("category-extra");
   const browseLive = selected === "seafood" || selected === "live";
   const showRecipes = ["prepared", "frozen"].includes(selected);
@@ -443,3 +443,5 @@ compactMenu.addEventListener("click", event => { if (event.target.closest("a,but
 
 
 
+
+if (new URLSearchParams(location.search).get("dish") === "shrimp-soup") openContact("message", "Хочу приготовить томатный крем-суп. Можно заказать 200 г очищенных креветок?");
