@@ -1,0 +1,187 @@
+<!DOCTYPE html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex"><title>Курильский Берег · прототип</title><style>
+:root{--ink:#193846;--line:#bcc8c9;--sea:#dfebeb;--paper:#fbfaf7;--accent:#a54432}*{box-sizing:border-box}html{scroll-padding-top:85px}body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.48 "Segoe UI",Arial,sans-serif}main,header>div,footer>div{width:min(1040px,calc(100% - 40px));margin:auto}header{position:sticky;top:0;z-index:2;background:var(--paper);border-bottom:1px solid var(--line)}header>div,nav,.row,.tools{display:flex;align-items:center;justify-content:space-between;gap:16px}header>div{min-height:64px}.brand{font:bold 21px Georgia,serif}a,button{color:inherit}button,select{font:inherit;cursor:pointer}a{text-underline-offset:4px}nav a,.brand{text-decoration:none}button,.btn,select{padding:8px 13px;border:1px solid var(--line);background:white;border-radius:5px}.btn{display:inline-block;text-decoration:none}.primary{background:var(--ink);color:white;border-color:var(--ink)}:focus-visible{outline:3px solid var(--accent);outline-offset:3px}.hero,.pair,.tiles{display:grid;gap:20px}.hero{grid-template-columns:1.2fr 1fr;align-items:center;padding:38px 0}.hero h1{margin:.15em 0;font:clamp(38px,5.7vw,72px)/1 Georgia,serif}.hero p{max-width:40ch}small,.tag,figcaption{font-size:13px;color:#48616a}.tag{letter-spacing:.1em;text-transform:uppercase}.slot{margin:0;display:grid;place-items:center;text-align:center;min-height:85px;border:1px dashed #95a9ab;border-radius:5px;background:repeating-linear-gradient(-45deg,transparent 0 13px,#b9cacc44 13px 14px),#edf2f1}.hero .slot{min-height:180px}.benefits{display:flex;flex-wrap:wrap;gap:8px 36px;background:var(--sea);padding:12px 18px}.section{padding:24px 0;border-bottom:1px solid var(--line)}h2{font:clamp(24px,3vw,33px)/1.12 Georgia,serif;margin:0 0 13px}h3,p{margin:6px 0 12px}.pair{grid-template-columns:1fr 1fr}.tiles{grid-template-columns:repeat(3,1fr)}.tile,.offer{padding:15px;border:1px solid var(--line);border-radius:6px}.offer{display:flex;align-items:center;justify-content:space-between;gap:14px}.offer strong{color:var(--accent)}.tiles .slot{margin-bottom:10px}details{padding:10px 0;border-top:1px solid var(--line)}summary{cursor:pointer;font-weight:600}.tools{justify-content:flex-start;flex-wrap:wrap}.quiet{background:var(--sea);padding:20px}.quote{font:21px/1.4 Georgia,serif}footer{padding:22px 0}dialog{width:min(460px,94vw);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:22px}dialog::backdrop{background:#132b38aa}label{display:block;margin:14px 0}output{font-weight:700}.empty{margin:18px 0}.item{padding:9px 0;border-bottom:1px solid var(--line)}[hidden]{display:none!important}@media(max-width:700px){header nav{display:none}.hero{grid-template-columns:1fr}.hero .slot{min-height:76px}.pair,.tiles{grid-template-columns:1fr}.hero,.section{padding:20px 0}.offer{align-items:start}.benefits{gap:5px 14px}.row{flex-wrap:wrap}}
+html{scrollbar-gutter:stable}.dish-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}.dish-list li{border-top:1px solid var(--line);padding:12px 0;font-weight:600}.pair,.tiles{align-items:start}.tiles{align-items:stretch}.section>div,.tile{min-width:0}.benefits{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;padding:12px 0;background:transparent;border-block:1px solid var(--line)}@media(max-width:700px){.dish-list,.benefits{grid-template-columns:1fr;gap:0}.benefits a{padding:5px 0}.offer button,#basket{flex-shrink:0}}.people{margin-top:16px}.quote{max-width:62ch}footer .tools{padding-bottom:14px}#reviews article{padding:12px 16px;border-left:2px solid var(--line)}@media(max-width:420px){.brand{font-size:17px}header>div{gap:6px}} .dish-list li{display:flex;align-items:center;gap:18px;padding:14px;background:#edf2f1;border:1px solid var(--line);border-radius:6px}.dish-list svg{width:80px;height:54px;flex:none;fill:none;stroke:#48616a;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}@media(max-width:700px){.dish-list{gap:8px}.dish-list svg{width:62px;height:42px}}</style><style>
+.weight-picker{margin:0 0 14px;padding:0;border:0}
+.weight-picker legend{margin-bottom:6px;font-weight:600}
+.weight-options{display:flex;flex-wrap:wrap;gap:8px}
+.weight-options label{display:flex;align-items:center;gap:6px;margin:0;padding:6px 9px;border:1px solid var(--line);border-radius:5px;cursor:pointer}
+.weight-options label:has(:checked){background:var(--sea);border-color:var(--ink)}
+.weight-options input{margin:0;accent-color:var(--ink)}
+.cut-preference select,.fulfillment select{display:block;width:100%;margin-top:4px}
+.item{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cart-subtotal{margin-top:12px;font-weight:700}
+.fulfillment{border-top:1px solid var(--line)}
+.fulfillment .estimate{padding:8px 10px;background:var(--sea);border-radius:5px}
+</style></head><body><header><div><a class="brand" href="#home">Курильский Берег</a><nav><a href="#catalog">Каталог</a><a href="#kitchen">Кухня</a><a href="#delivery">Доставка</a></nav><button id="basket">Корзина · <span id="count">0</span></button></div></header><main id="home">
+<section class="hero"><div><small class="tag">Прототип интернет-магазина</small><h1>Курильский Берег</h1><p>Рыба, икра и морепродукты в Петербурге. Доставка возможна в день заказа.</p><a class="btn primary" href="#offers">Посмотреть акцию</a> <a class="btn" href="#catalog">Открыть каталог</a><p><small>Цены и расчёты в прототипе приведены для примера.</small></p></div><figure class="slot"><figcaption>Фотография рыбы на витрине</figcaption></figure></section>
+<div class="benefits"><a href="#delivery">Доставка по Петербургу</a><a href="#cuts">Нарезка по желанию</a><a href="#delivery">Самовывоз из магазина</a></div>
+<section id="offers" class="section"><h2>Сегодня выгоднее</h2><div class="offer"><div><h3>Стейк лосося</h3><strong>259 ₽</strong> <del>299 ₽</del> за 100 г<br><small>Пример акции от 14 ноября</small></div><button data-pick="steak">Выбрать вес</button></div></section>
+<section id="catalog" class="section"><div class="row"><h2>Каталог</h2><small>Выборка для показа</small></div><div class="tiles"><article class="tile"><figure class="slot"><figcaption>Филе сёмги</figcaption></figure><h3>Рыба</h3><p>Филе сёмги · 3 190 ₽/кг</p><button data-pick="fillet" class="primary">Выбрать филе</button></article><article class="tile"><figure class="slot"><figcaption>Банка икры</figcaption></figure><h3>Икра</h3><details><summary>Пример фасовки</summary><p>Икра трески слабой соли · 190 г</p></details></article><article class="tile"><figure class="slot"><figcaption>Новинка ассортимента</figcaption></figure><h3>Новинки</h3><details><summary>Что в подборке</summary><p>Филе марлина и грудинка кижуча холодного копчения.</p></details></article></div></section>
+<section class="section" id="dinner"><h2>Сёмга на двоих</h2><p>Для ужина возьмите около 500 г филе и попросите разделить на два куска.</p><button data-pick="fillet" data-cut="halves">Выбрать филе</button></section><section class="section" id="caviar"><h2>Икра к столу</h2><div class="pair"><details><summary>Осетровая зернистая</summary><p>На пробу — 30 г, к столу — 50 или 100 г.</p></details><details><summary>Икра форели</summary><p>Банка 250 г. Степень посола можно уточнить у продавца.</p></details></div></section><section class="section" id="kitchen"><h2>Море уже к столу</h2><ul class="dish-list"><li><svg viewBox="0 0 100 64" aria-hidden="true"><ellipse cx="43" cy="24" rx="23" ry="13"/><ellipse cx="43" cy="24" rx="10" ry="5"/><path d="M20 24v15c0 17 46 17 46 0V24M67 18c16 0 22 12 8 17l-8 2m15-13v13c0 5-7 10-15 11"/></svg>Блюдо 1</li>
+<li><svg viewBox="0 0 100 64" aria-hidden="true"><path d="M16 38c4-13 29-25 50-26 11 0 19 6 20 14-15 0-29 7-43 15-14 8-24 8-27-3Zm4 7c4 11 24 10 43-1 12-6 19-9 18-17M35 22q10 0 17 9m-4-15q11 0 18 9m-5-12q9 0 15 7"/></svg>Блюдо 2</li>
+<li><svg viewBox="0 0 100 64" aria-hidden="true"><path d="M14 29q3 23 30 26h12q27-4 30-26M15 29q35 13 70 0M17 28q6-13 19-8m-3 7q7-17 19-10m-4 9 11-10 12 7-10 8Zm20-6 11-16m-5 18L89 7M39 55v3h22v-4"/></svg>Блюдо 3</li></ul></section><section id="recipes" class="section"><h2>На кухне с магазином</h2><details><summary>Открыть пример рецепта</summary><p>Паста с лангустинами и пореем</p></details></section>
+<section class="section" id="cuts"><h2>Разделка и упаковка</h2><div class="pair"><div><details><summary>Для духовки — филе</summary><p>Филе снимают вдоль хребта.</p><button data-pick="fillet">Выбрать вес</button></details><details><summary>Для сковороды — стейки</summary><p>Поперечный срез рыбы с костью в центре.</p><button data-pick="steak">Выбрать стейк</button></details><details><summary>Для бульона — голова и хребет</summary><p>При заказе целой рыбы уточните, можно ли оставить голову и хребет.</p></details></div><figure class="slot"><figcaption>Пример разделки и упаковки</figcaption></figure></div></section>
+<section class="section" id="people"><div><h2>Люди «Курильского Берега»</h2><p class="quote">«Меня зовут Алексей. 10 лет привожу в Питер рыбу — ту, что сам бы съел.»</p><small>Из обращения к покупателям, 20 мая</small><div class="tiles people"><figure class="slot"><figcaption>Устричный вечер</figcaption></figure><figure class="slot"><figcaption>За прилавком</figcaption></figure><figure class="slot"><figcaption>Покупатели магазина</figcaption></figure></div></div></section><section class="section" id="reviews"><div><h2>Покупатели о магазине</h2><div class="pair"><article><p>«Ребята всегда оперативно привозят в этот же день)))»</p><small>Дарина Цыплякова · Яндекс Отзывы</small></article><article><p>«Разделка рыбы замечательная! Очень внимательно относятся к пожеланиям по заказу.»</p><small>Елена Митянина · Яндекс Отзывы</small></article></div></div></section>
+<section id="delivery" class="section pair"><div><h2>Доставка и самовывоз</h2><p>Доставка возможна в день заказа. Время согласуем при оформлении.</p><details><summary>Посмотреть тарифы</summary><p>Зелёная зона — 350 ₽, бесплатно от 3 500 ₽. Жёлтая — 550 ₽, бесплатно от 5 500 ₽. Красная — по согласованию.</p></details><details><summary>Как проходит заказ</summary><ol><li>Выберите товар и вес.</li><li>Проверьте корзину.</li><li>Выберите зону доставки или самовывоз.</li></ol></details></div><div class="quiet"><h3>Забрать в магазине</h3>Скобелевский проспект, 17<br>Ежедневно с 10:00 до 21:00</div></section></main><footer><div class="tools"><a href="#catalog">Каталог</a><a href="#people">О магазине</a><a href="#reviews">Отзывы</a><a href="#delivery">Доставка</a><a href="tel:+79522240844">+7 (952) 224-08-44</a></div><div class="row"><small>Прототип Анастасии Шапран</small><small>Демонстрационная витрина. Цены приведены для примера.</small><a href="#home">Наверх ↑</a></div></footer>
+<dialog id="modal" aria-labelledby="title"><div class="row"><h2 id="title"></h2><form method="dialog"><button aria-label="Закрыть">×</button></form></div><div id="content"></div></dialog>
+<script>
+const products = {
+  fillet: {name: "Филе сёмги", rate: 3190, weights: [500, 1000, 1500, 2000]},
+  steak: {name: "Стейк лосося", rate: 2590, weights: [100, 200, 300]}
+};
+const deliveryZones = {
+  green: {label: "Зелёная зона", fee: 350, freeFrom: 3500},
+  yellow: {label: "Жёлтая зона", fee: 550, freeFrom: 5500}
+};
+const cart = new Map();
+const modal = document.querySelector("#modal");
+const content = document.querySelector("#content");
+const rub = value => value.toLocaleString("ru-RU") + " ₽";
+let fulfillment = "";
+
+function panel(title) {
+  document.querySelector("#title").textContent = title;
+  content.replaceChildren();
+  if (!modal.open) modal.showModal();
+}
+
+function pick(id, cutPreference) {
+  const product = products[id];
+  panel(product.name);
+  content.innerHTML = `
+    <fieldset class="weight-picker">
+      <legend>Вес</legend>
+      <div class="weight-options"></div>
+    </fieldset>
+    <label class="cut-preference">Пожелание к разделке
+      <select>
+        <option value="">Без пожеланий</option>
+        <option value="halves">Разделить филе на два куска</option>
+      </select>
+    </label>
+    <p>Предварительная сумма · <output aria-live="polite"></output></p>
+    <p><small>Итоговую сумму за весовой товар уточнит магазин после взвешивания.</small></p>
+    <button type="button" class="primary">В корзину</button>`;
+  const weightOptions = content.querySelector(".weight-options");
+  const cutLabel = content.querySelector(".cut-preference");
+  const cutSelect = cutLabel.querySelector("select");
+  cutLabel.hidden = id !== "fillet";
+  cutSelect.value = cutPreference || "";
+
+  for (const [index, grams] of product.weights.entries()) {
+    const label = document.createElement("label");
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = "weight";
+    input.value = grams;
+    input.checked = index === 0;
+    const amount = document.createElement("span");
+    amount.textContent = grams + " г";
+    label.append(input, amount);
+    weightOptions.append(label);
+  }
+  const selectedWeight = () => Number(weightOptions.querySelector(":checked").value);
+  const selectedPrice = () => product.rate * selectedWeight() / 1000;
+  const updatePrice = () => { content.querySelector("output").textContent = rub(selectedPrice()); };
+  weightOptions.addEventListener("change", updatePrice);
+  updatePrice();
+  weightOptions.querySelector(":checked").focus();
+
+  content.querySelector("button").onclick = () => {
+    const key = [id, selectedWeight(), cutSelect.value].join("-");
+    const line = cart.get(key) || {
+      name: product.name,
+      grams: selectedWeight(),
+      price: selectedPrice(),
+      cut: cutSelect.value ? cutSelect.selectedOptions[0].textContent : "",
+      quantity: 0
+    };
+    line.quantity++;
+    cart.set(key, line);
+    showCart();
+  };
+}
+
+function showCart() {
+  panel("Корзина");
+  let subtotal = 0;
+  let count = 0;
+  for (const [key, line] of cart) {
+    const row = document.createElement("div");
+    row.className = "item";
+    const description = document.createElement("div");
+    description.textContent = line.name + " · " + line.grams + " г × " + line.quantity +
+      " · " + rub(line.price * line.quantity);
+    if (line.cut) {
+      const cut = document.createElement("small");
+      cut.textContent = line.cut;
+      description.append(document.createElement("br"), cut);
+    }
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.textContent = "−";
+    remove.setAttribute("aria-label", "Убрать одну порцию: " + line.name + ", " + line.grams + " г");
+    remove.onclick = () => {
+      if (--line.quantity === 0) cart.delete(key);
+      showCart();
+    };
+    row.append(description, remove);
+    content.append(row);
+    subtotal += line.price * line.quantity;
+    count += line.quantity;
+  }
+
+  document.querySelector("#count").textContent = count;
+  const summary = document.createElement("p");
+  summary.className = "cart-subtotal";
+  summary.textContent = count ? "Товары · " + rub(subtotal) : "Корзина пуста.";
+  content.append(summary);
+  if (count) showFulfillment(subtotal);
+  else modal.querySelector("form button").focus();
+}
+
+function showFulfillment(subtotal) {
+  const box = document.createElement("div");
+  box.className = "fulfillment";
+  box.innerHTML = `
+    <label>Способ получения
+      <select>
+        <option value="">Выберите для примера</option>
+        <option value="pickup">Самовывоз</option>
+        <option value="green">Доставка · Зелёная зона</option>
+        <option value="yellow">Доставка · Жёлтая зона</option>
+        <option value="red">Доставка · Красная зона</option>
+      </select>
+    </label>
+    <div class="estimate" aria-live="polite"></div>
+    <p><small>Зону в прототипе можно выбрать вручную. Заказы здесь не отправляются.</small></p>`;
+  const select = box.querySelector("select");
+  const estimate = box.querySelector(".estimate");
+  select.value = fulfillment;
+  const update = () => {
+    fulfillment = select.value;
+    if (fulfillment === "pickup") {
+      estimate.textContent = "Самовывоз бесплатно · Скобелевский проспект, 17. Предварительный итог · " + rub(subtotal);
+    } else if (fulfillment === "red") {
+      estimate.textContent = "Тариф и итоговую сумму уточнит магазин по вашему адресу.";
+    } else if (fulfillment) {
+      const zone = deliveryZones[fulfillment];
+      const fee = subtotal >= zone.freeFrom ? 0 : zone.fee;
+      estimate.textContent = (fee ? "Доставка · " + rub(fee) : "Доставка бесплатно") +
+        ". Предварительный итог · " + rub(subtotal + fee) +
+        ". Доставка возможна в день заказа. Время согласуем при оформлении.";
+    } else {
+      estimate.textContent = "Выберите способ получения, чтобы посмотреть предварительный итог.";
+    }
+  };
+  select.addEventListener("change", update);
+  content.append(box);
+  update();
+  select.focus();
+}
+
+document.querySelectorAll("[data-pick]").forEach(button => {
+  button.onclick = () => pick(button.dataset.pick, button.dataset.cut);
+});
+document.querySelector("#basket").onclick = showCart;
+</script></body></html>
