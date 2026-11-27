@@ -1087,9 +1087,15 @@ if (
       for (const { intersectionRatio, isIntersecting, target } of entries) {
         const delivery = target.hasAttribute("data-delivery-swim");
         if (!isIntersecting || (delivery && intersectionRatio < 0.65)) continue;
-        if (delivery) swimAlongOrderRoute(target);
-        target.classList.add("is-swimming");
         swimObserver.unobserve(target);
+        if (delivery) {
+          document.fonts.ready.then(() => {
+            swimAlongOrderRoute(target);
+            target.classList.add("is-swimming");
+          });
+        } else {
+          target.classList.add("is-swimming");
+        }
       }
     }, { threshold: [0.35, 0.65] });
     swimmers.forEach((swimmer) => swimObserver.observe(swimmer));
