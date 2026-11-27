@@ -6,7 +6,6 @@ const normalize = (text) => text.toLowerCase().replaceAll("ё", "е").trim();
 const numbers = new Intl.NumberFormat("ru-RU", { maximumFractionDigits: 3 });
 const money = (amount) => `${numbers.format(amount)} ₽`;
 const storageKey = "kurilskiy-storefront-v1";
-const deliveryAddressKey = "kurilskiy-checked-delivery-address";
 const community = "https://vk.me/kurilskiy_bereg_spb";
 const storeEmail = "zakaz@rybarossii.ru";
 const assetRoot = new URL("./", document.currentScript.src);
@@ -760,23 +759,6 @@ const paymentTypes = {
   cash: "Наличными при получении",
 };
 let checkoutDraft = {};
-let checkedDeliveryAddress = "";
-try {
-  checkedDeliveryAddress = sessionStorage.getItem(deliveryAddressKey) || "";
-} catch {
-  /* The address remains available in memory when storage is blocked. */
-}
-
-function rememberDeliveryAddress(address) {
-  checkedDeliveryAddress = address;
-  checkoutDraft.address = address;
-  try {
-    if (address) sessionStorage.setItem(deliveryAddressKey, address);
-    else sessionStorage.removeItem(deliveryAddressKey);
-  } catch {
-    /* The address remains available in memory when storage is blocked. */
-  }
-}
 
 function openCheckout() {
   const form = node("form", undefined, "checkout-form");
@@ -794,7 +776,7 @@ function openCheckout() {
     input.autocomplete = autocomplete;
     input.maxLength = 140;
     input.required = true;
-    input.value = checkoutDraft[key] ?? (key === "address" ? checkedDeliveryAddress : "");
+    input.value = checkoutDraft[key] ?? "";
   }
   phone.type = "tel";
   phone.inputMode = "tel";
@@ -815,13 +797,11 @@ function openCheckout() {
     label.append(control, node("span", title));
     methods.append(label);
   }
-  const price = node("p", "", "checkout-price");
-  const drawPrice = () => {
-    const { subtotal, delivery } = total();
-    const amount = delivery === undefined ? `${money(subtotal)} за товары` : money(subtotal + delivery);
-    price.textContent = `Предварительная сумма · ${amount}`;
-  };
-  drawPrice();
+  const amount = total();
+  const priceLine =
+    amount.delivery === undefined
+      ? `${money(amount.subtotal)} за товары`
+      : money(amount.subtotal + amount.delivery);
   const note = node("p", "", "dialog-note");
   const changePaymentNote = () => {
     note.textContent =
@@ -840,16 +820,11 @@ function openCheckout() {
   );
   form.append(
     methods,
-    price,
+    node("p", `Предварительная сумма · ${priceLine}`, "checkout-price"),
     note,
     buttons,
   );
-  form.addEventListener("input", (event) => {
-    if (event.target === address && checkedDeliveryAddress && address.value.trim() !== checkedDeliveryAddress) {
-      rememberDeliveryAddress("");
-      setDelivery("unknown");
-      drawPrice();
-    }
+  form.addEventListener("input", () => {
     checkoutDraft = Object.fromEntries(new FormData(form));
   });
   form.addEventListener("submit", (event) => {
@@ -970,29 +945,9 @@ function initializeShop() {
       if (location.hash === "#delivery-map") deliveryMap.open = true;
     };
     window.addEventListener("hashchange", openLinkedMap);
-    if (typeof initializeDeliveryMap === "function") initializeDeliveryMap(deliveryMap, {
-      assetRoot,
-      hasItems: () => cart.size > 0,
-      openCart: () => openCart(),
-      pickup: () => {
-        const control = find('[data-delivery-mode="pickup"]');
-        setDelivery("pickup");
-        control.focus();
-      },
-      select: (selection) => {
-        rememberDeliveryAddress(selection?.address ?? "");
-        setDelivery(selection?.zone ?? (shipping === "pickup" ? "pickup" : "unknown"));
-      },
-      describe: (zone) => {
-        if (zone === "unknown") return { title: "Вне отмеченных зон", tariff: "Магазин уточнит, возможна ли доставка по этому адресу." };
-        if (zone === "red") return { title: "Красная зона", tariff: "Стоимость доставки согласует магазин." };
-        const { title, fee, threshold } = choices[zone];
-        const delivery = total().delivery;
-        if (delivery === 0) return { title, tariff: "Доставка для вашей корзины предварительно бесплатна." };
-        return { title, tariff: `Ориентир доставки — ${money(fee)}. Бесплатно от ${money(threshold)}.` };
-      },
+    deliveryMap.addEventListener("submit", (event) => {
+      checkoutDraft.address = new FormData(event.target).get("text").trim();
     });
-    else for (const element of all(".js-only", deliveryMap)) element.hidden = true;
     openLinkedMap();
   }
   enableCategoryScroll();
