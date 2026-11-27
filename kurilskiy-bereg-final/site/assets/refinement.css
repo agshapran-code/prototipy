@@ -1400,10 +1400,18 @@
     font-size: clamp(2.8rem, 11vw, 4.7rem);
   }
   .back-top {
+    right: calc(12px + env(safe-area-inset-right, 0px));
+    bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+    min-height: 44px;
+  }
+  :root:not(.enhanced) .back-top {
     position: static;
     width: fit-content;
     margin: 12px auto 16px;
     box-shadow: none;
+  }
+  .toast {
+    bottom: calc(74px + env(safe-area-inset-bottom, 0px));
   }
 }
 @media (max-width: 375px) {
