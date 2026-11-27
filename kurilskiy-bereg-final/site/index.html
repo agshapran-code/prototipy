@@ -11,9 +11,12 @@
     <meta name="theme-color" content="#102f3a" />
     <meta name="robots" content="noindex" />
     <link rel="stylesheet" href="assets/style.css" />
-    <link rel="stylesheet" href="assets/refinement.css?v=kitchen-fish" />
+    <link rel="stylesheet" href="assets/leaflet.css" />
+    <link rel="stylesheet" href="assets/refinement.css?v=delivery-address" />
     <script src="assets/products.js" defer></script>
-    <script src="assets/shop.js?v=kitchen-fish" defer></script>
+    <script src="assets/leaflet.js" defer></script>
+    <script src="assets/delivery-map.js" defer></script>
+    <script src="assets/shop.js?v=delivery-address" defer></script>
   </head>
   <body class="storefront-home">
     <a class="skip" href="#main">К содержанию</a>
@@ -426,7 +429,7 @@
       >
         <div class="wrap">
           <div class="people-heading reveal">
-            <h2 id="people-title">Люди «Курильского Берега»</h2>
+            <h2 id="people-title">Алексей и команда</h2>
             <figure class="team-quote">
               <blockquote>
                 «Меня зовут Алексей. 10 лет привожу в Питер рыбу — ту, что сам
@@ -531,28 +534,34 @@
             <div class="delivery-copy">
               <h3>Проверьте свой адрес</h3>
               <p>
-                Найдите адрес на карте магазина и выберите зону. Тарифы показаны
-                для предварительного расчёта.
+                Введите улицу и номер дома, чтобы увидеть точку на карте, зону
+                и предварительную стоимость доставки.
               </p>
               <details class="delivery-map" id="delivery-map">
                 <summary class="text-link">Открыть карту зон доставки</summary>
-                <form class="delivery-map-search" action="https://yandex.ru/map-widget/v1/" method="get" target="delivery-map-frame">
-                  <input type="hidden" name="um" value="constructor:9b29750eb61472ebf3746b58427bcdb1ff971a177d187b5128ba84d6b8c3c543" />
-                  <input type="hidden" name="source" value="constructor" />
-                  <input type="hidden" name="ll" value="30.31,59.94" />
-                  <input type="hidden" name="z" value="15" />
+                <form class="delivery-map-search js-only">
                   <label for="delivery-map-address">Адрес доставки</label>
                   <div>
-                    <input id="delivery-map-address" name="text" type="search" placeholder="Город, улица, дом" autocomplete="street-address" maxlength="140" required />
+                    <input id="delivery-map-address" type="search" placeholder="Улица, дом, корпус или строение" autocomplete="street-address" maxlength="140" required />
                     <button class="button button-ink" type="submit">Найти</button>
                   </div>
+                  <small>Поиск дома выполняет <a href="https://photon.komoot.io/">Photon</a> по данным OpenStreetMap.</small>
                 </form>
-                <iframe
-                  name="delivery-map-frame"
-                  title="Карта зон доставки Курильского Берега"
-                  src="https://yandex.ru/map-widget/v1/?um=constructor%3A9b29750eb61472ebf3746b58427bcdb1ff971a177d187b5128ba84d6b8c3c543&amp;source=constructor"
-                  loading="lazy"
-                ></iframe>
+                <p class="delivery-map-message" data-address-status role="status"></p>
+                <div class="delivery-address-matches" data-address-matches hidden></div>
+                <div class="delivery-address-result" data-address-result hidden>
+                  <strong data-address-zone></strong>
+                  <span data-address-label></span>
+                  <span data-address-tariff></span>
+                  <div class="delivery-address-actions">
+                    <a class="button button-ink" data-address-next href="catalog.html">Выбрать товары</a>
+                    <button class="back-action" data-address-pickup type="button" hidden>Выбрать самовывоз</button>
+                  </div>
+                </div>
+                <div class="delivery-map-area js-only" data-address-map role="region" aria-label="Карта зон доставки Курильского Берега"></div>
+                <button class="back-action js-only delivery-point-mode" data-address-point type="button" aria-pressed="false">Указать точку на карте</button>
+                <a class="text-link delivery-zone-source" href="https://yandex.ru/map-widget/v1/?um=constructor%3A9b29750eb61472ebf3746b58427bcdb1ff971a177d187b5128ba84d6b8c3c543&amp;source=constructor" target="_blank" rel="noopener">Карта магазина</a>
+                <noscript><p class="small">Откройте карту магазина, чтобы проверить, в какой зоне находится адрес.</p></noscript>
               </details>
               <p class="small delivery-contact">
                 <span>Вопросы по качеству или упаковке?</span>
