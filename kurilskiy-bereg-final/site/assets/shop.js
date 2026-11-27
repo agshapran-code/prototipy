@@ -1225,9 +1225,8 @@ if (
             swimAlongOrderRoute(target);
             target.classList.add("is-swimming");
           }
-        } else if (isIntersecting) {
-          target.classList.add("is-swimming");
-          swimObserver.unobserve(target);
+        } else {
+          target.classList.toggle("is-swimming", isIntersecting);
         }
       }
     }, { threshold: [0, 0.35, 0.65] });
