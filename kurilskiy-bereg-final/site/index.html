@@ -28,12 +28,12 @@
         </nav>
         <div class="header-actions">
           <details class="header-contact">
-            <summary aria-label="Связаться с магазином"><svg class="masthead-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16.1v3a2 2 0 0 1-2.2 2 17.7 17.7 0 0 1-7.7-2.7 17.4 17.4 0 0 1-5.4-5.4A17.7 17.7 0 0 1 3 5.2 2 2 0 0 1 5 3h3a2 2 0 0 1 2 1.7l.4 2.8a2 2 0 0 1-.6 2.1l-1.2 1.2a14 14 0 0 0 4.6 4.6l1.2-1.2a2 2 0 0 1 2.1-.6l2.8.5a2 2 0 0 1 1.7 2z"/></svg><span class="header-action-label">Связаться</span></summary>
+            <summary aria-label="Контакты магазина"><svg class="masthead-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16.1v3a2 2 0 0 1-2.2 2 17.7 17.7 0 0 1-7.7-2.7 17.4 17.4 0 0 1-5.4-5.4A17.7 17.7 0 0 1 3 5.2 2 2 0 0 1 5 3h3a2 2 0 0 1 2 1.7l.4 2.8a2 2 0 0 1-.6 2.1l-1.2 1.2a14 14 0 0 0 4.6 4.6l1.2-1.2a2 2 0 0 1 2.1-.6l2.8.5a2 2 0 0 1 1.7 2z"/></svg><span class="header-action-label">Контакты</span></summary>
             <div class="contact-menu">
               <a class="contact-phone" href="tel:+79522240844" aria-label="Позвонить +7 952 224-08-44">+7 952 224-08-44</a>
               <a href="https://vk.me/kurilskiy_bereg_spb">Написать ВКонтакте</a>
               <a href="mailto:zakaz@rybarossii.ru">Электронная почта</a>
-              <a href="https://rybarossii.ru/contact-us/">Форма обратной связи</a>
+              <button class="feedback-link js-only" type="button" data-feedback>Форма обратной связи</button>
             </div>
           </details>
           <a class="account-link" href="account.html" aria-label="Войти в личный кабинет">
@@ -164,7 +164,14 @@
 
       <section class="section catalog home-catalog" id="catalog" aria-labelledby="catalog-title">
   <div class="wrap">
-    <div class="section-head catalog-heading"><h2 id="catalog-title">Каталог</h2></div>
+    <div class="section-head catalog-heading">
+      <h2 id="catalog-title">
+        <a class="catalog-entry" href="catalog.html">
+          Каталог
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>
+        </a>
+      </h2>
+    </div>
     <div class="category-carousel">
   <div class="catalog-categories" id="category-rail" aria-label="Основные категории">
     <a class="category category-fish" href="catalog.html?section=fish">
@@ -187,6 +194,26 @@
       <img src="assets/dumplings.webp" alt="" width="730" height="455" loading="lazy" draggable="false" />
       <div class="category-caption"><span>Полуфабрикаты</span><i class="category-arrow" aria-hidden="true"></i></div>
     </a>
+    <a class="category category-live" href="catalog.html?section=live">
+      <img src="assets/oysters.webp" alt="" width="730" height="455" loading="lazy" draggable="false" />
+      <div class="category-caption"><span>Живые морепродукты</span><i class="category-arrow" aria-hidden="true"></i></div>
+    </a>
+    <a class="category category-canned" href="catalog.html?section=canned">
+      <img src="assets/canned-real.webp" alt="" width="730" height="455" loading="lazy" draggable="false" />
+      <div class="category-caption"><span>Консервы</span><i class="category-arrow" aria-hidden="true"></i></div>
+    </a>
+    <a class="category category-sauces" href="catalog.html?section=sauces">
+      <img src="assets/teriyaki.webp" alt="" width="730" height="455" loading="lazy" draggable="false" />
+      <div class="category-caption"><span>Соусы</span><i class="category-arrow" aria-hidden="true"></i></div>
+    </a>
+    <a class="category category-sets" href="catalog.html?section=sets">
+      <img src="assets/set.webp" alt="" width="730" height="455" loading="lazy" draggable="false" />
+      <div class="category-caption"><span>Наборы</span><i class="category-arrow" aria-hidden="true"></i></div>
+    </a>
+    <a class="category category-new" href="catalog.html?section=new">
+      <img src="assets/crab.webp" alt="" width="730" height="455" loading="lazy" draggable="false" />
+      <div class="category-caption"><span>Новинки</span><i class="category-arrow" aria-hidden="true"></i></div>
+    </a>
   </div>
 </div>
     <div class="category-controls">
@@ -197,7 +224,6 @@
         <img class="fishing-pike" src="assets/pike-timothy-knepp.jpg" alt="" width="330" height="121" draggable="false" loading="lazy" />
         <input type="range" min="0" max="100" value="0" aria-controls="category-rail" />
       </label>
-      <a class="catalog-all text-link" href="catalog.html">Весь каталог<svg class="masthead-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></a>
     </div>
   </div>
 </section>
@@ -416,7 +442,7 @@
               </figcaption>
             </figure>
           </div>
-          <div class="people-grid">
+          <div class="people-grid" role="region" aria-label="Фотографии команды и покупателей" tabindex="0">
             <a
               href="https://vk.ru/kurilskiy_bereg_spb"
               class="people-card reveal"
@@ -503,6 +529,7 @@
             </ol>
             <div class="delivery-swim" data-delivery-swim data-swim-on-view aria-hidden="true">
               <img src="assets/swimming-fish.webp" alt="" width="540" height="163" />
+              <img class="delivery-fish-small" src="assets/swimming-fish.webp" alt="" width="540" height="163" />
             </div>
           </div>
           <div class="delivery-panel reveal" data-delivery-panel>
@@ -512,11 +539,26 @@
                 Найдите адрес на карте магазина и выберите зону. Тарифы показаны
                 для предварительного расчёта.
               </p>
-              <a
-                class="text-link"
-                href="https://rybarossii.ru/dostavka-v-den-zakaza"
-                >Открыть карту зон и условия</a
-              >
+              <details class="delivery-map" id="delivery-map">
+                <summary class="text-link">Открыть карту зон доставки</summary>
+                <form class="delivery-map-search" action="https://yandex.ru/map-widget/v1/" method="get" target="delivery-map-frame">
+                  <input type="hidden" name="um" value="constructor:9b29750eb61472ebf3746b58427bcdb1ff971a177d187b5128ba84d6b8c3c543" />
+                  <input type="hidden" name="source" value="constructor" />
+                  <input type="hidden" name="ll" value="30.31,59.94" />
+                  <input type="hidden" name="z" value="15" />
+                  <label for="delivery-map-address">Адрес доставки</label>
+                  <div>
+                    <input id="delivery-map-address" name="text" type="search" placeholder="Город, улица, дом" autocomplete="street-address" maxlength="140" required />
+                    <button class="button button-ink" type="submit">Найти</button>
+                  </div>
+                </form>
+                <iframe
+                  name="delivery-map-frame"
+                  title="Карта зон доставки Курильского Берега"
+                  src="https://yandex.ru/map-widget/v1/?um=constructor%3A9b29750eb61472ebf3746b58427bcdb1ff971a177d187b5128ba84d6b8c3c543&amp;source=constructor"
+                  loading="lazy"
+                ></iframe>
+              </details>
               <p class="small delivery-contact">
                 <span>Вопросы по качеству или упаковке?</span>
                 <span>Позвоните <a href="tel:+79522240844">+7 952 224‑08‑44</a>.</span>

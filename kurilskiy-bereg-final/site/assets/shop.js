@@ -8,9 +8,9 @@ const money = (amount) => `${numbers.format(amount)} ₽`;
 const storageKey = "kurilskiy-storefront-v1";
 const community = "https://vk.me/kurilskiy_bereg_spb";
 const storeEmail = "zakaz@rybarossii.ru";
-const zonesPage = "https://rybarossii.ru/dostavka-v-den-zakaza";
 const assetRoot = new URL("./", document.currentScript.src);
 const catalogUrl = new URL("../catalog.html", assetRoot);
+const zonesPage = new URL("../#delivery-map", assetRoot);
 const choices = {
   unknown: { title: "Сначала уточнить зону" },
   green: { title: "Зелёная зона", fee: 350, threshold: 3500 },
@@ -412,6 +412,12 @@ function initializeReviews() {
 function initializeContact() {
   const contact = find(".header-contact");
   if (!contact) return;
+  find("[data-feedback]", contact)?.addEventListener("click", (event) => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    contact.open = false;
+    openFeedback();
+  });
   document.addEventListener("click", (event) => {
     if (contact.open && !contact.contains(event.target)) contact.open = false;
   });
@@ -624,9 +630,21 @@ function openCart(focusKey, focusDelta) {
     action("К оформлению", "button button-ink", openCheckout),
     action("Продолжить покупки", "back-action", () => dialog.close()),
   );
+  const mapLink = link("Проверить адрес на карте магазина", zonesPage.href, "text-link");
+  mapLink.addEventListener("click", (event) => {
+    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+    dialog.close();
+    if (location.hash === "#delivery-map") {
+      const map = find("#delivery-map");
+      if (map) {
+        map.open = true;
+        map.scrollIntoView({ block: "start" });
+      }
+    }
+  });
   content.append(
     field("Зона доставки или самовывоз", pick),
-    link("Проверить адрес на карте магазина", zonesPage, "text-link"),
+    mapLink,
     summary,
     node(
       "p",
@@ -662,6 +680,77 @@ function copyText(textarea, label) {
   } else {
     label.textContent = "Текст выделен. Скопируйте его через меню или Ctrl+C.";
   }
+}
+
+function openFeedback() {
+  const form = node("form", undefined, "checkout-form feedback-form");
+  const endpoint = find("meta[name='feedback-endpoint']")?.content;
+  const name = node("input");
+  name.name = "name";
+  name.autocomplete = "name";
+  name.maxLength = 80;
+  name.required = true;
+  const phone = node("input");
+  phone.name = "phone";
+  phone.type = "tel";
+  phone.autocomplete = "tel";
+  phone.maxLength = 30;
+  phone.required = true;
+  const status = node("p", "", "dialog-note");
+  status.setAttribute("role", "status");
+  const message = node("textarea");
+  message.name = "comment";
+  message.rows = 4;
+  message.required = true;
+  message.maxLength = 750;
+  const consent = node("input");
+  consent.type = "checkbox";
+  consent.name = "consent";
+  consent.required = true;
+  const agreement = node("label", undefined, "feedback-consent");
+  const terms = node("span", "Даю ");
+  const policy = link("согласие на обработку данных", "https://rybarossii.ru/index.php?route=information/information/agree&information_id=7", "text-link");
+  policy.target = "_blank";
+  policy.rel = "noopener";
+  terms.append(policy);
+  agreement.append(consent, terms);
+  const send = node("button", "Отправить", "button button-ink");
+  send.type = "submit";
+  send.disabled = !endpoint;
+  if (!endpoint) status.textContent = "Отправка формы пока не подключена.";
+  form.append(field("Имя", name), field("Телефон для ответа", phone), field("Сообщение", message), agreement, send, status);
+  phone.addEventListener("input", () => phone.setCustomValidity(""));
+  message.addEventListener("input", () => message.setCustomValidity(""));
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (!endpoint || send.disabled) return;
+    if (!/^[0-9+().\s-]+$/.test(phone.value) || !/^\d{7,15}$/.test(phone.value.replace(/\D/g, ""))) {
+      phone.setCustomValidity("Укажите номер, по которому магазин сможет вам ответить.");
+      phone.reportValidity();
+      return;
+    }
+    if (!message.value.trim()) {
+      message.setCustomValidity("Напишите сообщение магазину.");
+      message.reportValidity();
+      return;
+    }
+    const payload = new FormData(form);
+    payload.set("forma", "Обратная связь");
+    payload.set("stranica", location.pathname);
+    send.disabled = true;
+    status.textContent = "Отправляем сообщение…";
+    try {
+      const response = await fetch(endpoint, { method: "POST", body: payload });
+      if (!response.ok || (await response.json()).ok !== true) throw new Error("Feedback rejected");
+      form.reset();
+      status.textContent = "Сообщение отправлено.";
+    } catch {
+      status.textContent = "Сообщение не удалось отправить. Попробуйте ещё раз.";
+    } finally {
+      send.disabled = false;
+    }
+  });
+  showDialog("Форма обратной связи", form);
 }
 
 const paymentTypes = {
@@ -850,6 +939,17 @@ function selectProduct(link) {
 
 function initializeShop() {
   renderDelivery();
+  const deliveryMap = find("#delivery-map");
+  if (deliveryMap) {
+    const openLinkedMap = () => {
+      if (location.hash === "#delivery-map") deliveryMap.open = true;
+    };
+    window.addEventListener("hashchange", openLinkedMap);
+    deliveryMap.addEventListener("submit", (event) => {
+      checkoutDraft.address = new FormData(event.target).get("text").trim();
+    });
+    openLinkedMap();
+  }
   enableCategoryScroll();
   initializeReviews();
   initializeContact();
@@ -1024,32 +1124,61 @@ if (dialog?.showModal && inventory.size) {
 }
 
 function swimAlongOrderRoute(trail) {
-  const fish = find("img", trail);
   const origin = trail.getBoundingClientRect();
-  const stops = all(".order-route li > span", trail.parentElement).map((marker) => {
+  const markers = all(".order-route li > span", trail.parentElement);
+  const stops = markers.map((marker) => {
     const box = marker.getBoundingClientRect();
     return [box.left + box.width / 2 - origin.left, box.top + box.height / 2 - origin.top];
   });
   if (stops.length !== 3) return;
+  const animateRoute = (element, frames, options) => {
+    const animation = element.animate?.(frames, options);
+    if (animation) animation.id = "delivery-route";
+  };
   const vertical = Math.abs(stops[1][1] - stops[0][1]) > Math.abs(stops[1][0] - stops[0][0]);
-  const frames = [
-    [0, 0, 0, -4],
-    [0, 0.87, 0.13, -1],
-    [1, 0.91, 0.5, 4],
-    [2, 0.82, 0.89, -3],
-    [2, 0, 1, 0],
-  ].map(([stop, opacity, offset, tilt]) => {
-    const [x, y] = stops[stop];
-    const offsetX = vertical ? x - 22 : x;
-    const offsetY = vertical ? y : y - 29;
-    const angle = (vertical ? 90 : 0) + tilt;
-    return {
-      opacity,
-      offset,
-      transform: `translate(${offsetX}px, ${offsetY}px) translate(-50%, -50%) rotate(${angle}deg) scaleX(-1)`,
-    };
+  const poses = [
+    [0, 0, 0, -4, 0],
+    [0, 0.87, 0.13, -1, 0],
+    [0.32, 0.91, 0.25, -11, -10],
+    [0.69, 0.91, 0.38, 9, 8],
+    [1, 0.91, 0.5, 4, 0],
+    [1.33, 0.9, 0.63, -10, -10],
+    [1.68, 0.86, 0.76, 8, 8],
+    [2, 0.82, 0.89, -3, 0],
+    [2, 0, 1, 0, 0],
+  ];
+  all("img", trail).forEach((fish, index) => {
+    const frames = poses.map(([position, opacity, offset, tilt, sway]) => {
+      const step = Math.floor(position);
+      const [startX, startY] = stops[step];
+      const [endX, endY] = stops[Math.min(step + 1, stops.length - 1)];
+      const x = startX + (endX - startX) * (position - step);
+      const y = startY + (endY - startY) * (position - step);
+      const offsetX = vertical ? x - 22 + sway * 0.4 : x - index * 24;
+      const offsetY = vertical ? y - index * 9 : y - 29 + sway - index * 9;
+      const angle = (vertical ? 90 : 0) + tilt;
+      return {
+        opacity: opacity * (index === 0 ? 1 : 0.74),
+        offset,
+        transform: `translate(${offsetX}px, ${offsetY}px) translate(-50%, -50%) rotate(${angle}deg) scaleX(-1)`,
+      };
+    });
+    animateRoute(fish, frames, { duration: 5800, delay: index * 420, fill: "both" });
   });
-  fish.animate?.(frames, { duration: 5800, fill: "both" });
+  markers.forEach((marker, index) => {
+    const delay = [0.13, 0.5, 0.89][index] * 5800 - 230;
+    const timing = { duration: 820, delay, easing: "ease-in-out" };
+    animateRoute(marker, [
+      { transform: "scale(1)", backgroundColor: "#193e4b", color: "#eef9fa" },
+      { transform: "scale(1.13)", backgroundColor: "#bce7e4", color: "#173b48", offset: 0.4 },
+      { transform: "scale(1)", backgroundColor: "#193e4b", color: "#eef9fa" },
+    ], timing);
+    animateRoute(marker.nextElementSibling, [
+      { transform: "translateX(0)", color: "#f1fbfc" },
+      { transform: "translateX(3px)", color: "#bce7e4", offset: 0.4 },
+      { transform: "translateX(0)", color: "#f1fbfc" },
+    ], timing);
+  });
 }
 
 if (
@@ -1086,19 +1215,29 @@ if (
     const swimObserver = new IntersectionObserver((entries) => {
       for (const { intersectionRatio, isIntersecting, target } of entries) {
         const delivery = target.hasAttribute("data-delivery-swim");
-        if (!isIntersecting || (delivery && intersectionRatio < 0.65)) continue;
-        swimObserver.unobserve(target);
         if (delivery) {
-          document.fonts.ready.then(() => {
+          if (!isIntersecting) {
+            target.classList.remove("is-swimming");
+            target.parentElement.getAnimations({ subtree: true })
+              .filter((animation) => animation.id === "delivery-route")
+              .forEach((animation) => animation.cancel());
+          } else if (intersectionRatio >= 0.65 && !target.classList.contains("is-swimming")) {
             swimAlongOrderRoute(target);
             target.classList.add("is-swimming");
-          });
-        } else {
+          }
+        } else if (isIntersecting) {
           target.classList.add("is-swimming");
+          swimObserver.unobserve(target);
         }
       }
-    }, { threshold: [0.35, 0.65] });
-    swimmers.forEach((swimmer) => swimObserver.observe(swimmer));
+    }, { threshold: [0, 0.35, 0.65] });
+    swimmers.forEach((swimmer) => {
+      if (swimmer.hasAttribute("data-delivery-swim")) {
+        document.fonts.ready.then(() => swimObserver.observe(swimmer));
+      } else {
+        swimObserver.observe(swimmer);
+      }
+    });
   }
 }
 
