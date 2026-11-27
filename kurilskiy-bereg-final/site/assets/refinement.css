@@ -991,10 +991,22 @@
   border-radius: 9px;
   background: #e2eef1;
 }
-.delivery-zone-source {
-  display: inline-block;
+.delivery-map-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
   margin-top: 6px;
   font-size: 0.82rem;
+}
+.delivery-zones-return {
+  display: none;
+}
+@media (max-width: 730px) {
+  .delivery-map-actions a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+  }
 }
 
 .breadcrumb {

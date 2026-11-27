@@ -10,8 +10,8 @@
     />
     <meta name="theme-color" content="#102f3a" />
     <meta name="robots" content="noindex" />
-    <link rel="stylesheet" href="assets/style.css" />
-    <link rel="stylesheet" href="assets/refinement.css?v=delivery-zones-map" />
+    <link rel="stylesheet" href="assets/style.css?v=mobile-zones" />
+    <link rel="stylesheet" href="assets/refinement.css?v=mobile-zones" />
     <script src="assets/products.js" defer></script>
     <script src="assets/shop.js?v=delivery-zones-map" defer></script>
   </head>
@@ -533,33 +533,8 @@
               <p>
                 Найдите адрес или приблизьте карту. Посмотрите цвет зоны у вашего дома и выберите такую же в списке.
               </p>
-              <details class="delivery-map" id="delivery-map">
-                <summary class="text-link">Открыть карту зон доставки</summary>
-                <form class="delivery-map-search" action="https://yandex.ru/map-widget/v1/" method="get" target="delivery-map-frame">
-                  <input type="hidden" name="um" value="constructor:9b29750eb61472ebf3746b58427bcdb1ff971a177d187b5128ba84d6b8c3c543" />
-                  <input type="hidden" name="source" value="constructor" />
-                  <input type="hidden" name="ll" value="30.31,59.94" />
-                  <input type="hidden" name="z" value="15" />
-                  <label for="delivery-map-address">Адрес доставки</label>
-                  <div>
-                    <input id="delivery-map-address" name="text" type="search" placeholder="Город, улица, дом" autocomplete="street-address" maxlength="140" required />
-                    <button class="button button-ink" type="submit">Найти</button>
-                  </div>
-                </form>
-                <iframe
-                  name="delivery-map-frame"
-                  title="Карта зон доставки Курильского Берега"
-                  src="https://yandex.ru/map-widget/v1/?um=constructor%3A9b29750eb61472ebf3746b58427bcdb1ff971a177d187b5128ba84d6b8c3c543&amp;source=constructor"
-                  loading="lazy"
-                ></iframe>
-                <a class="text-link delivery-zone-source" href="https://yandex.ru/map-widget/v1/?um=constructor%3A9b29750eb61472ebf3746b58427bcdb1ff971a177d187b5128ba84d6b8c3c543&amp;source=constructor" target="_blank" rel="noopener">Открыть карту отдельно</a>
-              </details>
-              <p class="small delivery-contact">
-                <span>Вопросы по качеству или упаковке?</span>
-                <span>Позвоните <a href="tel:+79522240844">+7 952 224‑08‑44</a>.</span>
-              </p>
             </div>
-            <div class="delivery-tool">
+            <div class="delivery-tool" id="delivery-options">
               <div
                 class="chips js-only delivery-mode"
                 role="group"
@@ -628,6 +603,36 @@
                   >Построить маршрут</a
                 >
               </div>
+            </div>
+            <div class="delivery-location">
+              <details class="delivery-map" id="delivery-map">
+                <summary class="text-link">Открыть карту зон доставки</summary>
+                <form class="delivery-map-search" action="https://yandex.ru/map-widget/v1/" method="get" target="delivery-map-frame">
+                  <input type="hidden" name="um" value="constructor:9b29750eb61472ebf3746b58427bcdb1ff971a177d187b5128ba84d6b8c3c543" />
+                  <input type="hidden" name="source" value="constructor" />
+                  <input type="hidden" name="ll" value="30.31,59.94" />
+                  <input type="hidden" name="z" value="15" />
+                  <label for="delivery-map-address">Адрес доставки</label>
+                  <div>
+                    <input id="delivery-map-address" name="text" type="search" placeholder="Город, улица, дом" autocomplete="street-address" maxlength="140" required />
+                    <button class="button button-ink" type="submit">Найти</button>
+                  </div>
+                </form>
+                <iframe
+                  name="delivery-map-frame"
+                  title="Карта зон доставки Курильского Берега"
+                  src="https://yandex.ru/map-widget/v1/?um=constructor%3A9b29750eb61472ebf3746b58427bcdb1ff971a177d187b5128ba84d6b8c3c543&amp;source=constructor"
+                  loading="lazy"
+                ></iframe>
+                <div class="delivery-map-actions">
+                  <a class="text-link delivery-zones-return" href="#delivery-options">К выбору зоны</a>
+                  <a class="text-link" href="https://yandex.ru/map-widget/v1/?um=constructor%3A9b29750eb61472ebf3746b58427bcdb1ff971a177d187b5128ba84d6b8c3c543&amp;source=constructor" target="_blank" rel="noopener">Открыть карту отдельно</a>
+                </div>
+              </details>
+              <p class="small delivery-contact">
+                <span>Вопросы по качеству или упаковке?</span>
+                <span>Позвоните <a href="tel:+79522240844">+7 952 224‑08‑44</a>.</span>
+              </p>
             </div>
           </div>
         </div>
